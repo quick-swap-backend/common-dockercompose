@@ -1,0 +1,77 @@
+### userservice DB Connector 등록
+POST http://localhost:8083/connectors
+Content-Type: application/json
+
+{
+  "name": "userservice-db-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "userservice-mariadb",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "test@1234",
+    "database.server.id": "1003",
+    "topic.prefix": "userservice-cdc",
+    "database.include.list": "userservice",
+    "table.include.list": "userservice.users",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
+    "schema.history.internal.kafka.topic": "user-schema-changes",
+    "include.schema.changes": "false"
+  }
+}
+
+### productservice DB Connector 등록
+POST http://localhost:8083/connectors
+Content-Type: application/json
+
+{
+  "name": "productservice-outbox-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "productservice-mariadb",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "test@1234",
+    "database.server.id": "2001",
+    "topic.prefix": "product-outbox",
+    "database.include.list": "productservice",
+    "table.include.list": "productservice.outbox_events",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
+    "schema.history.internal.kafka.topic": "product-outbox-schema-changes",
+    "include.schema.changes": "false",
+    "snapshot.mode": "initial",
+    "transforms": "outbox",
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.table.field.event.id": "id",
+    "transforms.outbox.table.field.event.key": "aggregateid",
+    "transforms.outbox.table.field.event.type": "eventtype",
+    "transforms.outbox.table.field.event.timestamp": "createdat",
+    "transforms.outbox.table.field.event.payload": "payload",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}",
+    "transforms.outbox.route.by.field": "eventtype"
+  }
+}
+
+### tradeservice DB Connector 등록
+POST http://localhost:8083/connectors
+Content-Type: application/json
+
+{
+  "name": "tradeservice-db-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "tradeservice-mariadb",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "test@1234",
+    "database.server.id": "1003",
+    "topic.prefix": "tradeservice-cdc",
+    "database.include.list": "tradeservice",
+    "table.include.list": "tradeservice.trades",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
+    "schema.history.internal.kafka.topic": "trade-schema-changes",
+    "include.schema.changes": "false"
+  }
+}
+
+
